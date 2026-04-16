@@ -1,28 +1,114 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>طلبات فك الحظر بتاريخ 11-4-2026</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
+      background: #f3f6fa;
+      color: #1f2937;
     }
 
-    header {
-      background-color: #1f4e79;
-      color: white;
-      padding: 15px;
+    .topbar {
+      background: #0f4c81;
+      color: #fff;
+      padding: 18px 20px;
       text-align: center;
       font-size: 24px;
       font-weight: bold;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     }
 
-    .map-container {
+    .subtitle {
+      text-align: center;
+      padding: 10px 15px 0;
+      color: #475569;
+      font-size: 15px;
+    }
+
+    .login-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 100px);
+      padding: 20px;
+    }
+
+    .login-box {
       width: 100%;
-      height: calc(100vh - 70px);
+      max-width: 420px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .login-box h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #0f4c81;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #0f4c81;
+      box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.15);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0f4c81;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #0c3d67;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 14px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .map-section {
+      display: none;
+      height: calc(100vh - 100px);
+      padding: 0;
+      margin: 0;
     }
 
     iframe {
@@ -30,18 +116,111 @@
       height: 100%;
       border: none;
     }
+
+    .logout-bar {
+      background: #e2e8f0;
+      padding: 10px 15px;
+      text-align: left;
+    }
+
+    .logout-btn {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 14px;
+      background: #64748b;
+      border-radius: 6px;
+    }
+
+    .logout-btn:hover {
+      background: #475569;
+    }
+
+    .note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.6;
+    }
   </style>
 </head>
 <body>
 
-  <header>طلبات فك الحظر بتاريخ 11-4-2026</header>
+  <div class="topbar">طلبات فك الحظر بتاريخ 11-4-2026</div>
+  <div class="subtitle">صفحة عرض الخريطة بعد تسجيل الدخول</div>
 
-  <div class="map-container">
-    <iframe 
-      src="https://aj1.maps.arcgis.com/apps/mapviewer/index.html?webmap=e4fcdcced878425aa95a17c9396600ac"
-      allowfullscreen>
-    </iframe>
+  <div id="loginSection" class="login-wrapper">
+    <div class="login-box">
+      <h2>تسجيل الدخول</h2>
+
+      <div class="form-group">
+        <label for="username">اسم المستخدم</label>
+        <input type="text" id="username" placeholder="أدخل اسم المستخدم" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" placeholder="أدخل كلمة المرور" />
+      </div>
+
+      <button onclick="login()">دخول</button>
+      <div id="errorMsg" class="error"></div>
+
+      <div class="note">
+        هذه حماية بسيطة داخل الصفحة فقط، وليست حماية آمنة كاملة للنشر العام.
+      </div>
+    </div>
   </div>
+
+  <div id="mapContainer" style="display:none;">
+    <div class="logout-bar">
+      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    </div>
+
+    <div class="map-section" id="mapSection" style="display:block;">
+      <iframe
+        src="https://aj1.maps.arcgis.com/apps/mapviewer/index.html?webmap=e4fcdcced878425aa95a17c9396600ac"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    // بيانات الدخول التجريبية
+    const validUsername = "admin";
+    const validPassword = "12345";
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMsg = document.getElementById("errorMsg");
+
+      if (username === validUsername && password === validPassword) {
+        localStorage.setItem("isLoggedIn", "true");
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("mapContainer").style.display = "block";
+        errorMsg.textContent = "";
+      } else {
+        errorMsg.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("isLoggedIn");
+      document.getElementById("mapContainer").style.display = "none";
+      document.getElementById("loginSection").style.display = "flex";
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("errorMsg").textContent = "";
+    }
+
+    window.onload = function () {
+      if (localStorage.getItem("isLoggedIn") === "true") {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("mapContainer").style.display = "block";
+      }
+    };
+  </script>
 
 </body>
 </html>
